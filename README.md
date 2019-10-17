@@ -1,4 +1,5 @@
 # coen317-security
-HIII
 COEN317 - Microprocessor Systems project for Dr. Trabelsi
-![alt text](https://ih0.redbubble.net/image.688342252.3933/flat,800x800,075,f.u2.jpg)
+![alt text](http://hvg.ece.concordia.ca/wp/wp-content/uploads/2017/10/trabelsi-150x150.jpg)
+
+Sir, you have to check the Moodle!
