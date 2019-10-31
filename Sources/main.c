@@ -12,8 +12,10 @@ char checkKeyPad(void);
 
 char* msg;
 char* password;
+char* password_check;
 char temp = 0x00;
 char count = 0x00;
+char count_check =0x00;
    
    
 void main(void) 
@@ -80,6 +82,64 @@ void main(void)
 	cmd2LCD(CLR_LCD);
 	msg = " Password Set.";
 	putsLCD(msg);
+	cmd2LCD(CLR_LCD);
+	putsLCD(" Locking Device");
+  asm_mydelay1ms(200);
+  putsLCD(".");
+  asm_mydelay1ms(200);
+  putsLCD(".");
+  asm_mydelay1ms(200);
+  putsLCD(".");
+	cmd2LCD(CLR_LCD);
+	putsLCD(" Enter Pass:");
+	cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
+	temp = 0x00;	
+	while(temp != 0x0A) 
+	{ 
+	  temp = checkKeyPad(); 
+    if(temp != 0x0f && temp != 0x0A) 
+    {
+      *(password_check+count_check) = temp;
+      count_check++;
+     if (temp == 0x01) {
+      msg = "1"; 
+     }if
+     (temp == 0x02){
+     msg = "2";
+     }if
+     (temp == 0x03){
+      msg = "3";
+     }if
+     (temp == 0x04){
+     msg = "4";
+
+     }if
+     (temp == 0x05){
+     msg = "5";
+     }if
+     (temp == 0x06){
+     msg = "6";
+     }if          
+     (temp == 0x07){
+     msg = "7";
+     }if
+     (temp == 0x08){
+     msg = "8";
+     }if
+     (temp == 0x09){
+     msg = "9";
+     }
+     if
+     (temp == 0x00){
+     msg = "0";
+     }
+    
+      putsLCD(msg);  
+    }
+	}
+	
+	
+	
 	
 	while(1);
 }
