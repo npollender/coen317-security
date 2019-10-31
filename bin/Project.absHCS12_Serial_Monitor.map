@@ -14,6 +14,7 @@ FILE SECTION
 ---------------------------------------------------------------------------------------------
 mc9s12dg256.c.o                         Model: BANKED,        Lang: ANSI-C
 Start12.cpp.o                           Model: BANKED,        Lang: C++
+rtshc12.c.o (ansibi.lib)                Model: BANKED,        Lang: ANSI-C
 mixasm.asm.o                            Model: BANKED,        Lang: Assembler
 main.c.o                                Model: BANKED,        Lang: ANSI-C
 
@@ -24,8 +25,8 @@ Entry point: 0xC000 (_Startup)
 _startupData is allocated at 0xC015 and uses 14 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
-  _Range   pZeroOut       0x1100     2
-  _Copy    *toCopyDownBeg 0xC071
+  _Range   pZeroOut       0x1100     5
+  _Copy    *toCopyDownBeg 0xC0A2
   int      nofInitBodies  0
   _Cpp     *initBodies    0xC027
   int      nofFiniBodies  0
@@ -38,9 +39,10 @@ Section Name                    Size  Type     From       To       Segment
 ---------------------------------------------------------------------------------------------
 .init                             21     R     0xC000     0xC014   ROM_C000
 .startData                        18     R     0xC015     0xC026   ROM_C000
-.rodata1                          74     R     0xC027     0xC070   ROM_C000
-.copy                              2     R     0xC071     0xC072   ROM_C000
-.text                            341     R   0x308000   0x308154   PAGE_30
+.rodata1                         112     R     0xC027     0xC096   ROM_C000
+NON_BANKED                        11     R     0xC097     0xC0A1   ROM_C000
+.copy                              2     R     0xC0A2     0xC0A3   ROM_C000
+.text                            667     R   0x308000   0x30829A   PAGE_30
 .stack                           256   R/W     0x1000     0x10FF   RAM
 .abs_section_8                     1   N/I        0x8        0x8   .absSeg0
 .abs_section_9                     1   N/I        0x9        0x9   .absSeg1
@@ -383,13 +385,15 @@ Section Name                    Size  Type     From       To       Segment
 .abs_section_17e                   2   N/I      0x17E      0x17F   .absSeg338
 .abs_section_2ae                   2   N/I      0x2AE      0x2AF   .absSeg339
 .abs_section_2be                   2   N/I      0x2BE      0x2BF   .absSeg340
-CodeSec                           68     R   0x308155   0x308198   PAGE_30
-DataSec                            2   R/W     0x1100     0x1101   RAM
+.bss                               1   R/W     0x1100     0x1100   RAM
+.common                            2   R/W     0x1101     0x1102   RAM
+CodeSec                           68     R   0x30829B   0x3082DE   PAGE_30
+DataSec                            2   R/W     0x1103     0x1104   RAM
 .vectSeg341_vect                   2     R     0xFFFE     0xFFFF   .vectSeg341
 
 Summary of section sizes per section type:
-READ_ONLY (R):         20E (dec:      526)
-READ_WRITE (R/W):      102 (dec:      258)
+READ_ONLY (R):         385 (dec:      901)
+READ_WRITE (R/W):      105 (dec:      261)
 NO_INIT (N/I):         190 (dec:      400)
 
 *********************************************************************************************
@@ -405,8 +409,8 @@ OBJECT-ALLOCATION SECTION
 MODULE:                 -- mc9s12dg256.c.o --
 - PROCEDURES:
 - VARIABLES:
-     _PORTE                                       8       1       1       0   .abs_section_8
-     _DDRE                                        9       1       1       0   .abs_section_9
+     _PORTE                                       8       1       1       6   .abs_section_8
+     _DDRE                                        9       1       1       1   .abs_section_9
      _PEAR                                        A       1       1       0   .abs_section_a
      _MODE                                        B       1       1       0   .abs_section_b
      _PUCR                                        C       1       1       0   .abs_section_c
@@ -614,9 +618,9 @@ MODULE:                 -- mc9s12dg256.c.o --
      _PPSP                                      25D       1       1       0   .abs_section_25d
      _PIEP                                      25E       1       1       0   .abs_section_25e
      _PIFP                                      25F       1       1       0   .abs_section_25f
-     _PTH                                       260       1       1       0   .abs_section_260
+     _PTH                                       260       1       1      16   .abs_section_260
      _PTIH                                      261       1       1       0   .abs_section_261
-     _DDRH                                      262       1       1       0   .abs_section_262
+     _DDRH                                      262       1       1       1   .abs_section_262
      _RDRH                                      263       1       1       0   .abs_section_263
      _PERH                                      264       1       1       0   .abs_section_264
      _PPSH                                      265       1       1       0   .abs_section_265
@@ -687,8 +691,8 @@ MODULE:                 -- mc9s12dg256.c.o --
      _CAN4TXDSR7                                2BB       1       1       0   .abs_section_2bb
      _CAN4TXDLR                                 2BC       1       1       0   .abs_section_2bc
      _CAN4TXTBPR                                2BD       1       1       0   .abs_section_2bd
-     _PORTAB                                      0       2       2       2   .abs_section_0
-     _DDRAB                                       2       2       2       1   .abs_section_2
+     _PORTAB                                      0       2       2       0   .abs_section_0
+     _DDRAB                                       2       2       2       0   .abs_section_2
      _PARTID                                     1A       2       2       0   .abs_section_1a
      _TCNT                                       44       2       2       0   .abs_section_44
      _TC0                                        50       2       2       0   .abs_section_50
@@ -754,34 +758,45 @@ MODULE:                 -- Start12.cpp.o --
      _startupData                              C015       E      14       5   .startData  
 - LABELS:
      __SEG_END_SSTACK                          1100       0       0       1               
+MODULE:                 -- rtshc12.c.o (ansibi.lib) --
+- PROCEDURES:
+     _BDIVMODS                                 C097       B      11       1   NON_BANKED  
+- VARIABLES:
 MODULE:                 -- mixasm.asm.o --
 - PROCEDURES:
-     asm_mydelay1ms                          308155       7       7       6   CodeSec     
-     oloop                                   30815C       3       3       0   CodeSec     
-     iloop                                   30815F      11      17       0   CodeSec     
-     next                                    308170       5       5       0   CodeSec     
-     fini                                    308175       2       2       0   CodeSec     
-     asm_mydelay10us                         308177       7       7       4   CodeSec     
-     uoloop                                  30817E       3       3       0   CodeSec     
-     uiloop                                  308181      11      17       0   CodeSec     
-     unext                                   308192       5       5       0   CodeSec     
-     ufini                                   308197       2       2       0   CodeSec     
+     asm_mydelay1ms                          30829B       7       7      12   CodeSec     
+     oloop                                   3082A2       3       3       0   CodeSec     
+     iloop                                   3082A5      11      17       0   CodeSec     
+     next                                    3082B6       5       5       0   CodeSec     
+     fini                                    3082BB       2       2       0   CodeSec     
+     asm_mydelay10us                         3082BD       7       7       4   CodeSec     
+     uoloop                                  3082C4       3       3       0   CodeSec     
+     uiloop                                  3082C7      11      17       0   CodeSec     
+     unext                                   3082D8       5       5       0   CodeSec     
+     ufini                                   3082DD       2       2       0   CodeSec     
 - VARIABLES:
-     ASMData1ms                                1100       1       1       2   DataSec     
-     ASMData10us                               1101       1       1       2   DataSec     
+     ASMData1ms                                1103       1       1       2   DataSec     
+     ASMData10us                               1104       1       1       2   DataSec     
 MODULE:                 -- main.c.o --
 - PROCEDURES:
-     main                                    30803E      52      82       2   .text       
-     cmd2LCD                                 308090      3E      62      20   .text       
-     openLCD                                 3080CE      2F      47       2   .text       
-     putcLCD                                 3080FD      42      66       2   .text       
-     putsLCD                                 30813F      16      22      10   .text       
+     main                                    30803E      E1     225      11   .text       
+     cmd2LCD                                 30811F      3E      62      20   .text       
+     openLCD                                 30815D      2F      47       2   .text       
+     putcLCD                                 30818C      42      66       4   .text       
+     putsLCD                                 3081CE      32      50       4   .text       
+     putsLCD_fast                            308200      10      16       2   .text       
+     checkKeyPad                             308210      8B     139       2   .text       
 - VARIABLES:
-     STRING.Hello.Trabelsi.1                   C027       F      15       1   .rodata1    
-     STRING.LCD.works.........2                C036      12      18       1   .rodata1    
-     STRING..This.is.your.3                    C048       E      14       1   .rodata1    
-     STRING.Secuirty.System.4                  C056      10      16       1   .rodata1    
-     STRING..Pressed.1.5                       C066       B      11       1   .rodata1    
+     STRING..COEN317.Security.1                C027      12      18       1   .rodata1    
+     STRING.Initializing...2                   C039       F      15       1   .rodata1    
+     STRING.Initializing...3                   C048       F      15       1   .rodata1    
+     STRING.Initializing...4                   C057       F      15       1   .rodata1    
+     STRING.Initializing...5                   C066       F      15       1   .rodata1    
+     STRING..Set.a.Password..6                 C075      11      17       1   .rodata1    
+     STRING...7                                C086       2       2       1   .rodata1    
+     STRING..Password.Set..8                   C088       F      15       1   .rodata1    
+     temp                                      1100       1       1       7   .bss        
+     msg                                       1101       2       2       9   .common     
 
 *********************************************************************************************
 MODULE STATISTIC
@@ -789,20 +804,26 @@ MODULE STATISTIC
 ---------------------------------------------------------------------------------------------
   mc9s12dg256.c.o                            400      0      0
   Start12.cpp.o                                0     83      0
+  rtshc12.c.o (ansibi.lib)                     0     11      0
   mixasm.asm.o                                 2     68      0
-  main.c.o                                     0    279     74
+  main.c.o                                     3    605    112
   other                                      256     20      2
 
 *********************************************************************************************
 SECTION USE IN OBJECT-ALLOCATION SECTION
 ---------------------------------------------------------------------------------------------
 SECTION: ".text"
-  Init__Fv main cmd2LCD openLCD putcLCD putsLCD 
+  Init__Fv main cmd2LCD openLCD putcLCD putsLCD putsLCD_fast checkKeyPad 
+SECTION: ".bss"
+  temp 
 SECTION: ".init"
   _Startup 
 SECTION: ".rodata1"
-  STRING.Hello.Trabelsi.1 STRING.LCD.works.........2 STRING..This.is.your.3 
-  STRING.Secuirty.System.4 STRING..Pressed.1.5 
+  STRING..COEN317.Security.1 STRING.Initializing...2 STRING.Initializing...3 
+  STRING.Initializing...4 STRING.Initializing...5 STRING..Set.a.Password..6 
+  STRING...7 STRING..Password.Set..8 
+SECTION: "NON_BANKED"
+  _BDIVMODS 
 SECTION: ".abs_section_8"
   _PORTE 
 SECTION: ".abs_section_9"
@@ -1485,6 +1506,8 @@ SECTION: ".abs_section_2ae"
   _CAN4RXTSR 
 SECTION: ".abs_section_2be"
   _CAN4TXTSR 
+SECTION: ".common"
+  msg 
 SECTION: "CodeSec"
   asm_mydelay1ms oloop iloop next fini asm_mydelay10us uoloop uiloop unext 
   ufini 
@@ -1495,10 +1518,10 @@ SECTION: "DataSec"
 OBJECT LIST SORTED BY ADDRESS
      Name                                      Addr   hSize   dSize     Ref    Section   RLIB
 ---------------------------------------------------------------------------------------------
-     _PORTAB                                      0       2       2       2   .abs_section_0
-     _DDRAB                                       2       2       2       1   .abs_section_2
-     _PORTE                                       8       1       1       0   .abs_section_8
-     _DDRE                                        9       1       1       0   .abs_section_9
+     _PORTAB                                      0       2       2       0   .abs_section_0
+     _DDRAB                                       2       2       2       0   .abs_section_2
+     _PORTE                                       8       1       1       6   .abs_section_8
+     _DDRE                                        9       1       1       1   .abs_section_9
      _PEAR                                        A       1       1       0   .abs_section_a
      _MODE                                        B       1       1       0   .abs_section_b
      _PUCR                                        C       1       1       0   .abs_section_c
@@ -1761,9 +1784,9 @@ OBJECT LIST SORTED BY ADDRESS
      _PPSP                                      25D       1       1       0   .abs_section_25d
      _PIEP                                      25E       1       1       0   .abs_section_25e
      _PIFP                                      25F       1       1       0   .abs_section_25f
-     _PTH                                       260       1       1       0   .abs_section_260
+     _PTH                                       260       1       1      16   .abs_section_260
      _PTIH                                      261       1       1       0   .abs_section_261
-     _DDRH                                      262       1       1       0   .abs_section_262
+     _DDRH                                      262       1       1       1   .abs_section_262
      _RDRH                                      263       1       1       0   .abs_section_263
      _PERH                                      264       1       1       0   .abs_section_264
      _PPSH                                      265       1       1       0   .abs_section_265
@@ -1836,39 +1859,60 @@ OBJECT LIST SORTED BY ADDRESS
      _CAN4TXDLR                                 2BC       1       1       0   .abs_section_2bc
      _CAN4TXTBPR                                2BD       1       1       0   .abs_section_2bd
      _CAN4TXTSR                                 2BE       2       2       0   .abs_section_2be
-     ASMData1ms                                1100       1       1       2   DataSec     
-     ASMData10us                               1101       1       1       2   DataSec     
+     temp                                      1100       1       1       7   .bss        
+     msg                                       1101       2       2       9   .common     
+     ASMData1ms                                1103       1       1       2   DataSec     
+     ASMData10us                               1104       1       1       2   DataSec     
      _Startup                                  C000      15      21       0   .init       
-     STRING.Hello.Trabelsi.1                   C027       F      15       1   .rodata1    
-     STRING.LCD.works.........2                C036      12      18       1   .rodata1    
-     STRING..This.is.your.3                    C048       E      14       1   .rodata1    
-     STRING.Secuirty.System.4                  C056      10      16       1   .rodata1    
-     STRING..Pressed.1.5                       C066       B      11       1   .rodata1    
+     STRING..COEN317.Security.1                C027      12      18       1   .rodata1    
+     STRING.Initializing...2                   C039       F      15       1   .rodata1    
+     STRING.Initializing...3                   C048       F      15       1   .rodata1    
+     STRING.Initializing...4                   C057       F      15       1   .rodata1    
+     STRING.Initializing...5                   C066       F      15       1   .rodata1    
+     STRING..Set.a.Password..6                 C075      11      17       1   .rodata1    
+     STRING...7                                C086       2       2       1   .rodata1    
+     STRING..Password.Set..8                   C088       F      15       1   .rodata1    
+     _BDIVMODS                                 C097       B      11       1   NON_BANKED  
      Init__Fv                                308000      3E      62       2   .text       
-     main                                    30803E      52      82       2   .text       
-     cmd2LCD                                 308090      3E      62      20   .text       
-     openLCD                                 3080CE      2F      47       2   .text       
-     putcLCD                                 3080FD      42      66       2   .text       
-     putsLCD                                 30813F      16      22      10   .text       
-     asm_mydelay1ms                          308155       7       7       6   CodeSec     
-     oloop                                   30815C       3       3       0   CodeSec     
-     iloop                                   30815F      11      17       0   CodeSec     
-     next                                    308170       5       5       0   CodeSec     
-     fini                                    308175       2       2       0   CodeSec     
-     asm_mydelay10us                         308177       7       7       4   CodeSec     
-     uoloop                                  30817E       3       3       0   CodeSec     
-     uiloop                                  308181      11      17       0   CodeSec     
-     unext                                   308192       5       5       0   CodeSec     
-     ufini                                   308197       2       2       0   CodeSec     
+     main                                    30803E      E1     225      11   .text       
+     cmd2LCD                                 30811F      3E      62      20   .text       
+     openLCD                                 30815D      2F      47       2   .text       
+     putcLCD                                 30818C      42      66       4   .text       
+     putsLCD                                 3081CE      32      50       4   .text       
+     putsLCD_fast                            308200      10      16       2   .text       
+     checkKeyPad                             308210      8B     139       2   .text       
+     asm_mydelay1ms                          30829B       7       7      12   CodeSec     
+     oloop                                   3082A2       3       3       0   CodeSec     
+     iloop                                   3082A5      11      17       0   CodeSec     
+     next                                    3082B6       5       5       0   CodeSec     
+     fini                                    3082BB       2       2       0   CodeSec     
+     asm_mydelay10us                         3082BD       7       7       4   CodeSec     
+     uoloop                                  3082C4       3       3       0   CodeSec     
+     uiloop                                  3082C7      11      17       0   CodeSec     
+     unext                                   3082D8       5       5       0   CodeSec     
+     ufini                                   3082DD       2       2       0   CodeSec     
 
 *********************************************************************************************
 UNUSED-OBJECTS SECTION
 ---------------------------------------------------------------------------------------------
+NOT USED PROCEDURES
+rtshc12.c.o (ansibi.lib):
+  _BSHL _BSHRS _BSHRU _BDIVMODU _ISHL _ISHRU _ISHRS _LSHL _LSHRU _LSHRS _LADD 
+  _LSUB _LAND _LOR _LXOR _LCMP _LCMP_P _LCMP_PP _LNEG _LCOM _LINC _LDEC _LMUL 
+  _LMULU16x32 _LMULS16x32 _lDivMod _LDIVU _NEG_P _LDIVS _LMODU _LMODS _ILSEXT 
+  _COPY _CASE_DIRECT _CASE_DIRECT_BYTE _CASE_CHECKED _CASE_CHECKED_BYTE 
+  _CASE_SEARCH _CASE_SEARCH_BYTE _CASE_SEARCH_8 _CASE_SEARCH_8_BYTE _FCALL 
+  _FPCMP 
+NOT USED VARIABLES
+rtshc12.c.o (ansibi.lib):
+  _PowOfTwo_8 _PowOfTwo_16 _PowOfTwo_32 errno 
+main.c.o:
+  password 
 
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0xC071 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xC0A2 ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -1877,14 +1921,18 @@ OBJECT-DEPENDENCIES SECTION
 ---------------------------------------------------------------------------------------------
 _Startup                  USES __SEG_END_SSTACK Init__Fv main 
 Init__Fv                  USES _startupData 
-main                      USES _DDRAB cmd2LCD openLCD STRING.Hello.Trabelsi.1 
-                                putsLCD STRING.LCD.works.........2 
-                                STRING..This.is.your.3 STRING.Secuirty.System.4 _PORTAB 
-                                STRING..Pressed.1.5 
+main                      USES _DDRE _DDRH openLCD main 
+                                STRING..COEN317.Security.1 msg asm_mydelay1ms cmd2LCD 
+                                STRING.Initializing...2 temp STRING.Initializing...3 
+                                STRING.Initializing...4 STRING.Initializing...5 putsLCD_fast 
+                                STRING..Set.a.Password..6 checkKeyPad STRING...7 putsLCD 
+                                STRING..Password.Set..8 _BDIVMODS 
 cmd2LCD                   USES _PORTK asm_mydelay10us 
 openLCD                   USES _DDRK asm_mydelay1ms cmd2LCD 
 putcLCD                   USES _PORTK asm_mydelay10us 
-putsLCD                   USES putcLCD asm_mydelay1ms 
+putsLCD                   USES putcLCD asm_mydelay1ms cmd2LCD 
+putsLCD_fast              USES putcLCD 
+checkKeyPad               USES _PTH _PORTE 
 iloop                     USES ASMData1ms 
 next                      USES ASMData1ms 
 uiloop                    USES ASMData10us 
@@ -1897,24 +1945,36 @@ DEPENDENCY TREE
  | 
  +- main                
  |  | 
- |  +- cmd2LCD             
- |  |  | 
- |  |  +- asm_mydelay10us     
- |  |       
  |  +- openLCD             
  |  |  | 
  |  |  +- asm_mydelay1ms      
  |  |  |    
+ |  |  +- cmd2LCD             
+ |  |     | 
+ |  |     +- asm_mydelay10us     
+ |  |          
+ |  +- asm_mydelay1ms       (see above)
+ |  |  
+ |  +- cmd2LCD              (see above)
+ |  |  
+ |  +- putsLCD_fast        
+ |  |  | 
+ |  |  +- putcLCD             
+ |  |     | 
+ |  |     +- asm_mydelay10us      (see above)
+ |  |        
+ |  +- checkKeyPad         
+ |  |    
+ |  +- putsLCD             
+ |  |  | 
+ |  |  +- putcLCD              (see above)
+ |  |  |  
+ |  |  +- asm_mydelay1ms       (see above)
+ |  |  |  
  |  |  +- cmd2LCD              (see above)
  |  |     
- |  +- putsLCD             
- |     | 
- |     +- putcLCD             
- |     |  | 
- |     |  +- asm_mydelay10us      (see above)
- |     |     
- |     +- asm_mydelay1ms       (see above)
- |        
+ |  +- _BDIVMODS           
+ |       
  +- _Startup            
     | 
     +- Init__Fv            
@@ -1928,5 +1988,5 @@ STATISTIC SECTION
 ExeFile:
 --------
 Number of blocks to be downloaded: 7
-Total size of all blocks to be downloaded: 526
+Total size of all blocks to be downloaded: 901
 

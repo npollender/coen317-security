@@ -1,51 +1,88 @@
-#include <hidef.h>      /* common defines and macros */
-#include "derivative.h"      /* derivative-specific definitions */
-
+#include <hidef.h>
+#include "derivative.h"
 #include "mixasm.h"
+#include "lcd_commands.h"
 
 void cmd2LCD (char cmd);
 void openLCD(void);
 void putcLCD(char cx);
+void putsLCD_fast(char *ptr);
 void putsLCD(char *ptr); 
+char checkKeyPad(void);
+
+char* msg;
+char* password;
+char temp = 0x00;
    
    
-void main(void) {
-	char *msg1 = "Hello Trabelsi";
-	char *msg2 = "LCD works!!!!!!!!";
-	char *msg3 = " This is your";
-  char *msg4 = "Secuirty System";
+void main(void) 
+{
+  //Set Port E as output (Some bits are used by the keypad)
+  DDRE = 0x00;
   
-  //Set A Port as input port (Keypad)
-  DDRA = 0x00;
-	
-	// Messages are placed line by line indepedently
-	// There might be other ways to control the LCD so that for example we can shift data on LCD:
-	//    we can displace the same message, or we can do something with the cursor shift and data to do so
-	cmd2LCD(0x01);
+  //Set Bit 0 of Port H as an input for the enter button
+  DDRH = 0x00;
+  
+	//Configure LCD
 	openLCD();
-	putsLCD(msg1);
-	cmd2LCD(0xC0); // move cursor to 2nd row, 1st column
-	putsLCD(msg2);
-	cmd2LCD(0x01);
-  putsLCD(msg3);
-  cmd2LCD(0xC0);
-  putsLCD(msg4);
-	while(1) 
+	cmd2LCD(CLR_LCD);
+	
+	//Start Application
+	msg = " COEN317-Security";
+	putsLCD(msg);
+	asm_mydelay1ms(200);
+	asm_mydelay1ms(200);
+	asm_mydelay1ms(200);
+	asm_mydelay1ms(200);
+	asm_mydelay1ms(200);
+	asm_mydelay1ms(200);
+	asm_mydelay1ms(200);
+	asm_mydelay1ms(200);
+	asm_mydelay1ms(200);
+	cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
+	msg = "Initializing |";
+	putsLCD(msg);
+	
+	for(temp = 0; temp < 15; temp++) 
 	{
-	     if(PORTA_BIT0 && PORTA_BIT4) 
-	     {
-	        cmd2LCD(0x01);
-	        putsLCD(" Pressed 1"); 
-	     }
-	};  
+	  if(temp%3 == 1)
+	    msg = "Initializing /";
+	  if(temp%3 == 2)
+	    msg = "Initializing -";
+	  if(temp%3 == 0)
+	    msg = "Initializing |";
+	  cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
+	  putsLCD_fast(msg);
+	  asm_mydelay1ms(200);
+	  asm_mydelay1ms(200);
+	  
+	}
+	
+	temp = 0;
+	cmd2LCD(CLR_LCD);
+	msg = " Set a Password:";
+	putsLCD(msg);
+	cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
+
+  // While loop prompting user to register a password	
+	while(temp != 0x0A) 
+	{ 
+	  temp = checkKeyPad(); 
+    if(temp != 0x0f && temp != 0x0A)
+      putsLCD("*");  
+	}
+	
+	cmd2LCD(CLR_LCD);
+	msg = " Password Set.";
+	putsLCD(msg);
+	
+	while(1);
 }
 
-// In Assembly, we use PTK. In C, we use PORTK
-// PORTK: bit7 bit6 bit5 bit4 bit3 bit2 bit1 bit0
-//                  DB7  DB6  DB5  DB4  EN   RS
 
-void cmd2LCD (char cmd) {  // cmd: two nibbles. First the higher is sent over DB7-DB4 pins. This is actually DB7-DB4
-                          //   Then, the lower nibble is sent over DB7-DB4 pins. This is actually DB3-DB0
+void cmd2LCD (char cmd) 
+{
+    
     char hnibble, lnibble;
     // note that here, RS is always 0
     
@@ -75,7 +112,8 @@ void cmd2LCD (char cmd) {  // cmd: two nibbles. First the higher is sent over DB
     asm_mydelay10us(5);
 }
 
-void openLCD(void) {
+void openLCD(void) 
+{
     DDRK = 0xFF; // PortK configured as outputs
     asm_mydelay1ms(100); // wait for 100 ms
     cmd2LCD(0x28); // set 4-bit data, 2-line display, 5x8 font
@@ -87,7 +125,8 @@ void openLCD(void) {
     
 }
 
-void putcLCD(char cx) {
+void putcLCD(char cx) 
+{
     char hnibble, lnibble;
     //temp = cx;
     // note that here, RS is always 1
@@ -118,10 +157,100 @@ void putcLCD(char cx) {
     asm_mydelay10us(5); // wait for 50  us
 }
 
-void putsLCD (char *ptr) {
-    while (*ptr) {
+void putsLCD (char *ptr) 
+{
+    int count= 0;
+    while (*ptr) 
+    {
         putcLCD(*ptr);
-        asm_mydelay1ms(50);
+        asm_mydelay1ms(80);
+        if(count > 16)
+          cmd2LCD(SHIFT_DISP_RIGHT);
+        ptr++;
+        count++;
+    }
+}
+
+void putsLCD_fast(char *ptr) 
+{
+    while (*ptr) 
+    {
+        putcLCD(*ptr);
         ptr++;
     }
+}
+
+// This function verifies if the keypad has been pressed.
+// If it was pressed, then the return value represents the key pressed.
+// If no key pressed, then the return value is 0x0F
+// If enter was pressed, value of 0x0A is returned
+char checkKeyPad(void) 
+{
+//Button 1
+    if(!PTH_PTH6) 
+    {
+      while(!PTH_PTH6);
+      return 0x01;
+    }
+    // Button 2
+    if(!PTH_PTH7) 
+    {
+      while(!PTH_PTH7);
+      return 0x02;
+    }
+    //Button 3
+    if(!PTH_PTH5) 
+    {
+      while(!PTH_PTH5);
+      return 0x03;
+    }
+    //Button 4
+    if(!PTH_PTH4) 
+    { 
+      while(!PTH_PTH4);
+      return 0x04;
+    }
+    //Button 5
+    if(!PORTE_BIT7) 
+    {
+      while(!PORTE_BIT7);
+      return 0x05;
+    }
+    //Button 6
+    if(!PORTE_BIT4) 
+    {
+      while(!PORTE_BIT4);
+      return 0x06;
+    }
+    //Button 7
+    if(!PTH_PTH2) 
+    {
+    while(!PTH_PTH2);
+      return 0x07;
+    }
+    //Button 8
+    if(!PTH_PTH3) 
+    {
+    while(!PTH_PTH3);
+      return 0x08;
+    }
+    //Button 9
+    if(!PTH_PTH1) 
+    {
+    while(!PTH_PTH1);
+      return 0x09;
+    }
+    //Button 0
+    if(!PORTE_BIT0) 
+    {
+    while(!PORTE_BIT0);
+      return 0x00; 
+    }
+    //Enter button
+    if(!PTH_PTH0) 
+    {
+      while(!PTH_PTH0);
+      return 0x0A;
+    }
+    return 0x0f;
 }

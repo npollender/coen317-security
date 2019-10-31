@@ -1,0 +1,4 @@
+#define CLR_LCD 0x01
+#define MOVE_CURSOR_TO_2ND_ROW 0xC0
+#define SHIFT_DISP_RIGHT 0x18
+#define SHIFT_CURSOR_RIGHT 0x10;
