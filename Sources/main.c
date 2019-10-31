@@ -9,6 +9,9 @@ void putcLCD(char cx);
 void putsLCD_fast(char *ptr);
 void putsLCD(char *ptr); 
 char checkKeyPad(void);
+void checkPassword(void);
+void wrongPassword(void);
+void setPassword(void);
 
 char* msg;
 char* password;
@@ -16,6 +19,8 @@ char* password_check;
 char temp = 0x00;
 char count = 0x00;
 char count_check =0x00;
+char attempts = 3;
+char Locked = 0;
    
    
 void main(void) 
@@ -33,7 +38,6 @@ void main(void)
 	//Start Application
 	msg = " COEN317-Security";
 	putsLCD(msg);
-	asm_mydelay1ms(200);
 	asm_mydelay1ms(200);
 	asm_mydelay1ms(200);
 	asm_mydelay1ms(200);
@@ -61,41 +65,58 @@ void main(void)
 	  
 	}
 	
-	temp = 0;
-	cmd2LCD(CLR_LCD);
-	msg = " Set a Password:";
-	putsLCD(msg);
-	cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
-
-  // While loop prompting user to register a password	
-	while(temp != 0x0A) 
+  setPassword();
+		
+	while(1) 
 	{ 
-	  temp = checkKeyPad(); 
-    if(temp != 0x0f && temp != 0x0A) 
-    {
-      *(password+count) = temp;
-      count++;
-      putsLCD("*");  
-    }
-	}
-	
-	cmd2LCD(CLR_LCD);
-	msg = " Password Set.";
-	putsLCD(msg);
-	cmd2LCD(CLR_LCD);
-	putsLCD(" Locking Device");
-  asm_mydelay1ms(200);
-  putsLCD(".");
-  asm_mydelay1ms(200);
-  putsLCD(".");
-  asm_mydelay1ms(200);
-  putsLCD(".");
-	cmd2LCD(CLR_LCD);
-	putsLCD(" Enter Pass:");
-	cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
-	temp = 0x00;	
-	while(temp != 0x0A) 
-	{ 
+	  if(!Locked)
+	  {
+	    cmd2LCD(CLR_LCD);
+	    putsLCD(" Press 1 to Lock");
+	    cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
+	    putsLCD("Press 2 to chg pass");
+	    Locked = 2;
+	    temp = 0;
+	  } 
+	  else if(Locked == 2) 
+	  {
+	     temp = checkKeyPad();
+	     
+	     if(temp == 0x01)
+	      Locked = 4;
+	     if(temp == 0x02) 
+	     {
+	        setPassword();
+	        Locked = 0;
+	     }
+	  }
+	  else 
+	  {
+	  
+	  if(Locked != 3) 
+	  {
+	    putsLCD(" Locking Device");
+      Locked = 0; //Lock state = 1
+      asm_mydelay1ms(200);
+      putsLCD(".");
+      asm_mydelay1ms(200);
+      putsLCD(".");
+      asm_mydelay1ms(200);
+      putsLCD(".");
+	    cmd2LCD(CLR_LCD);
+	    putsLCD(" Enter Password:");
+    	cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
+	    temp = 0x00;
+	    Locked = 3;
+	    count_check = 0;
+	  }
+	   
+	  //Lock up
+	  if(attempts == 0) 
+	  {
+	    while(1);
+	  }
+	  
 	  temp = checkKeyPad(); 
     if(temp != 0x0f && temp != 0x0A) 
     {
@@ -133,15 +154,18 @@ void main(void)
      (temp == 0x00){
      msg = "0";
      }
-    
       putsLCD(msg);  
     }
+    
+    /*
+    * User pressed Enter. Verify if password matches.
+    */
+    if(temp == 0x0A) 
+    {
+      checkPassword();
+    }
 	}
-	
-	
-	
-	
-	while(1);
+	}
 }
 
 
@@ -319,3 +343,92 @@ char checkKeyPad(void)
     }
     return 0x0f;
 }
+
+void checkPassword(void) {
+      // Before comparing, check if length of password
+      // is the same. If not, password entered is wrong
+      if(count != count_check) 
+      {
+        wrongPassword();    
+      } 
+      else 
+      {
+        for(temp = 0; temp < count; temp ++) {
+         if(*(password+temp) != *(password_check+temp)) {
+           wrongPassword();
+           temp = count;
+           break;
+         }else
+          continue;
+        }
+        
+        cmd2LCD(CLR_LCD);
+        putsLCD(" Correct!");
+        cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
+        putsLCD("Unlocking...");
+        asm_mydelay1ms(200);
+        attempts = 3;
+        Locked = 0;
+      }  
+}
+
+void wrongPassword(void) {
+  cmd2LCD(CLR_LCD);
+  putsLCD(" Wrong Password.");
+  cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
+  switch(attempts) {
+    case 3:
+    msg = "2 Tries Left.";
+    break;
+    case 2:
+    msg = "1 Try Left.";
+    break;
+    case 1:
+    msg = "No Attempts Left.";
+    break;
+    default:
+    break;
+   }
+   putsLCD(msg);
+   attempts--;
+   asm_mydelay1ms(200);
+   asm_mydelay1ms(200);
+   cmd2LCD(CLR_LCD);
+   if(attempts !=0)
+    putsLCD(" Enter Password:");
+   else {
+    putsLCD(" Device Permanently");
+    cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
+    putsLCD("Locked.");
+   }
+   cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
+}
+
+void setPassword(void) 
+{
+ 	temp = 0;
+ 	count = 0;
+	cmd2LCD(CLR_LCD);
+	msg = " Set a Password:";
+	putsLCD(msg);
+	cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
+
+  // While loop prompting user to register a password	
+	while(temp != 0x0A) 
+	{ 
+	  temp = checkKeyPad(); 
+    if(temp != 0x0f && temp != 0x0A) 
+    {
+      *(password+count) = temp;
+      count++;
+      putsLCD("*");  
+    }
+	}
+	
+	cmd2LCD(CLR_LCD);
+	msg = " Password Set.";
+	putsLCD(msg);
+	cmd2LCD(CLR_LCD); 
+}
+
+
