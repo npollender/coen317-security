@@ -13,6 +13,7 @@ char checkKeyPad(void);
 char* msg;
 char* password;
 char temp = 0x00;
+char count = 0x00;
    
    
 void main(void) 
@@ -68,8 +69,12 @@ void main(void)
 	while(temp != 0x0A) 
 	{ 
 	  temp = checkKeyPad(); 
-    if(temp != 0x0f && temp != 0x0A)
+    if(temp != 0x0f && temp != 0x0A) 
+    {
+      *(password+count) = temp;
+      count++;
       putsLCD("*");  
+    }
 	}
 	
 	cmd2LCD(CLR_LCD);

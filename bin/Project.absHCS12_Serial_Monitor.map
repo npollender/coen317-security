@@ -25,7 +25,7 @@ Entry point: 0xC000 (_Startup)
 _startupData is allocated at 0xC015 and uses 14 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
-  _Range   pZeroOut       0x1100     5
+  _Range   pZeroOut       0x1100     8
   _Copy    *toCopyDownBeg 0xC0A2
   int      nofInitBodies  0
   _Cpp     *initBodies    0xC027
@@ -42,7 +42,7 @@ Section Name                    Size  Type     From       To       Segment
 .rodata1                         112     R     0xC027     0xC096   ROM_C000
 NON_BANKED                        11     R     0xC097     0xC0A1   ROM_C000
 .copy                              2     R     0xC0A2     0xC0A3   ROM_C000
-.text                            667     R   0x308000   0x30829A   PAGE_30
+.text                            686     R   0x308000   0x3082AD   PAGE_30
 .stack                           256   R/W     0x1000     0x10FF   RAM
 .abs_section_8                     1   N/I        0x8        0x8   .absSeg0
 .abs_section_9                     1   N/I        0x9        0x9   .absSeg1
@@ -385,15 +385,15 @@ NON_BANKED                        11     R     0xC097     0xC0A1   ROM_C000
 .abs_section_17e                   2   N/I      0x17E      0x17F   .absSeg338
 .abs_section_2ae                   2   N/I      0x2AE      0x2AF   .absSeg339
 .abs_section_2be                   2   N/I      0x2BE      0x2BF   .absSeg340
-.bss                               1   R/W     0x1100     0x1100   RAM
-.common                            2   R/W     0x1101     0x1102   RAM
-CodeSec                           68     R   0x30829B   0x3082DE   PAGE_30
-DataSec                            2   R/W     0x1103     0x1104   RAM
+.bss                               2   R/W     0x1100     0x1101   RAM
+.common                            4   R/W     0x1102     0x1105   RAM
+CodeSec                           68     R   0x3082AE   0x3082F1   PAGE_30
+DataSec                            2   R/W     0x1106     0x1107   RAM
 .vectSeg341_vect                   2     R     0xFFFE     0xFFFF   .vectSeg341
 
 Summary of section sizes per section type:
-READ_ONLY (R):         385 (dec:      901)
-READ_WRITE (R/W):      105 (dec:      261)
+READ_ONLY (R):         398 (dec:      920)
+READ_WRITE (R/W):      108 (dec:      264)
 NO_INIT (N/I):         190 (dec:      400)
 
 *********************************************************************************************
@@ -764,28 +764,28 @@ MODULE:                 -- rtshc12.c.o (ansibi.lib) --
 - VARIABLES:
 MODULE:                 -- mixasm.asm.o --
 - PROCEDURES:
-     asm_mydelay1ms                          30829B       7       7      12   CodeSec     
-     oloop                                   3082A2       3       3       0   CodeSec     
-     iloop                                   3082A5      11      17       0   CodeSec     
-     next                                    3082B6       5       5       0   CodeSec     
-     fini                                    3082BB       2       2       0   CodeSec     
-     asm_mydelay10us                         3082BD       7       7       4   CodeSec     
-     uoloop                                  3082C4       3       3       0   CodeSec     
-     uiloop                                  3082C7      11      17       0   CodeSec     
-     unext                                   3082D8       5       5       0   CodeSec     
-     ufini                                   3082DD       2       2       0   CodeSec     
+     asm_mydelay1ms                          3082AE       7       7      12   CodeSec     
+     oloop                                   3082B5       3       3       0   CodeSec     
+     iloop                                   3082B8      11      17       0   CodeSec     
+     next                                    3082C9       5       5       0   CodeSec     
+     fini                                    3082CE       2       2       0   CodeSec     
+     asm_mydelay10us                         3082D0       7       7       4   CodeSec     
+     uoloop                                  3082D7       3       3       0   CodeSec     
+     uiloop                                  3082DA      11      17       0   CodeSec     
+     unext                                   3082EB       5       5       0   CodeSec     
+     ufini                                   3082F0       2       2       0   CodeSec     
 - VARIABLES:
-     ASMData1ms                                1103       1       1       2   DataSec     
-     ASMData10us                               1104       1       1       2   DataSec     
+     ASMData1ms                                1106       1       1       2   DataSec     
+     ASMData10us                               1107       1       1       2   DataSec     
 MODULE:                 -- main.c.o --
 - PROCEDURES:
-     main                                    30803E      E1     225      11   .text       
-     cmd2LCD                                 30811F      3E      62      20   .text       
-     openLCD                                 30815D      2F      47       2   .text       
-     putcLCD                                 30818C      42      66       4   .text       
-     putsLCD                                 3081CE      32      50       4   .text       
-     putsLCD_fast                            308200      10      16       2   .text       
-     checkKeyPad                             308210      8B     139       2   .text       
+     main                                    30803E      F4     244      12   .text       
+     cmd2LCD                                 308132      3E      62      20   .text       
+     openLCD                                 308170      2F      47       2   .text       
+     putcLCD                                 30819F      42      66       4   .text       
+     putsLCD                                 3081E1      32      50       4   .text       
+     putsLCD_fast                            308213      10      16       2   .text       
+     checkKeyPad                             308223      8B     139       2   .text       
 - VARIABLES:
      STRING..COEN317.Security.1                C027      12      18       1   .rodata1    
      STRING.Initializing...2                   C039       F      15       1   .rodata1    
@@ -795,8 +795,10 @@ MODULE:                 -- main.c.o --
      STRING..Set.a.Password..6                 C075      11      17       1   .rodata1    
      STRING...7                                C086       2       2       1   .rodata1    
      STRING..Password.Set..8                   C088       F      15       1   .rodata1    
-     temp                                      1100       1       1       7   .bss        
-     msg                                       1101       2       2       9   .common     
+     temp                                      1100       1       1       8   .bss        
+     count                                     1101       1       1       2   .bss        
+     msg                                       1102       2       2       9   .common     
+     password                                  1104       2       2       1   .common     
 
 *********************************************************************************************
 MODULE STATISTIC
@@ -806,7 +808,7 @@ MODULE STATISTIC
   Start12.cpp.o                                0     83      0
   rtshc12.c.o (ansibi.lib)                     0     11      0
   mixasm.asm.o                                 2     68      0
-  main.c.o                                     3    605    112
+  main.c.o                                     6    624    112
   other                                      256     20      2
 
 *********************************************************************************************
@@ -815,7 +817,7 @@ SECTION USE IN OBJECT-ALLOCATION SECTION
 SECTION: ".text"
   Init__Fv main cmd2LCD openLCD putcLCD putsLCD putsLCD_fast checkKeyPad 
 SECTION: ".bss"
-  temp 
+  temp count 
 SECTION: ".init"
   _Startup 
 SECTION: ".rodata1"
@@ -1507,7 +1509,7 @@ SECTION: ".abs_section_2ae"
 SECTION: ".abs_section_2be"
   _CAN4TXTSR 
 SECTION: ".common"
-  msg 
+  msg password 
 SECTION: "CodeSec"
   asm_mydelay1ms oloop iloop next fini asm_mydelay10us uoloop uiloop unext 
   ufini 
@@ -1859,10 +1861,12 @@ OBJECT LIST SORTED BY ADDRESS
      _CAN4TXDLR                                 2BC       1       1       0   .abs_section_2bc
      _CAN4TXTBPR                                2BD       1       1       0   .abs_section_2bd
      _CAN4TXTSR                                 2BE       2       2       0   .abs_section_2be
-     temp                                      1100       1       1       7   .bss        
-     msg                                       1101       2       2       9   .common     
-     ASMData1ms                                1103       1       1       2   DataSec     
-     ASMData10us                               1104       1       1       2   DataSec     
+     temp                                      1100       1       1       8   .bss        
+     count                                     1101       1       1       2   .bss        
+     msg                                       1102       2       2       9   .common     
+     password                                  1104       2       2       1   .common     
+     ASMData1ms                                1106       1       1       2   DataSec     
+     ASMData10us                               1107       1       1       2   DataSec     
      _Startup                                  C000      15      21       0   .init       
      STRING..COEN317.Security.1                C027      12      18       1   .rodata1    
      STRING.Initializing...2                   C039       F      15       1   .rodata1    
@@ -1874,23 +1878,23 @@ OBJECT LIST SORTED BY ADDRESS
      STRING..Password.Set..8                   C088       F      15       1   .rodata1    
      _BDIVMODS                                 C097       B      11       1   NON_BANKED  
      Init__Fv                                308000      3E      62       2   .text       
-     main                                    30803E      E1     225      11   .text       
-     cmd2LCD                                 30811F      3E      62      20   .text       
-     openLCD                                 30815D      2F      47       2   .text       
-     putcLCD                                 30818C      42      66       4   .text       
-     putsLCD                                 3081CE      32      50       4   .text       
-     putsLCD_fast                            308200      10      16       2   .text       
-     checkKeyPad                             308210      8B     139       2   .text       
-     asm_mydelay1ms                          30829B       7       7      12   CodeSec     
-     oloop                                   3082A2       3       3       0   CodeSec     
-     iloop                                   3082A5      11      17       0   CodeSec     
-     next                                    3082B6       5       5       0   CodeSec     
-     fini                                    3082BB       2       2       0   CodeSec     
-     asm_mydelay10us                         3082BD       7       7       4   CodeSec     
-     uoloop                                  3082C4       3       3       0   CodeSec     
-     uiloop                                  3082C7      11      17       0   CodeSec     
-     unext                                   3082D8       5       5       0   CodeSec     
-     ufini                                   3082DD       2       2       0   CodeSec     
+     main                                    30803E      F4     244      12   .text       
+     cmd2LCD                                 308132      3E      62      20   .text       
+     openLCD                                 308170      2F      47       2   .text       
+     putcLCD                                 30819F      42      66       4   .text       
+     putsLCD                                 3081E1      32      50       4   .text       
+     putsLCD_fast                            308213      10      16       2   .text       
+     checkKeyPad                             308223      8B     139       2   .text       
+     asm_mydelay1ms                          3082AE       7       7      12   CodeSec     
+     oloop                                   3082B5       3       3       0   CodeSec     
+     iloop                                   3082B8      11      17       0   CodeSec     
+     next                                    3082C9       5       5       0   CodeSec     
+     fini                                    3082CE       2       2       0   CodeSec     
+     asm_mydelay10us                         3082D0       7       7       4   CodeSec     
+     uoloop                                  3082D7       3       3       0   CodeSec     
+     uiloop                                  3082DA      11      17       0   CodeSec     
+     unext                                   3082EB       5       5       0   CodeSec     
+     ufini                                   3082F0       2       2       0   CodeSec     
 
 *********************************************************************************************
 UNUSED-OBJECTS SECTION
@@ -1906,8 +1910,6 @@ rtshc12.c.o (ansibi.lib):
 NOT USED VARIABLES
 rtshc12.c.o (ansibi.lib):
   _PowOfTwo_8 _PowOfTwo_16 _PowOfTwo_32 errno 
-main.c.o:
-  password 
 
 *********************************************************************************************
 COPYDOWN SECTION
@@ -1925,7 +1927,7 @@ main                      USES _DDRE _DDRH openLCD main
                                 STRING..COEN317.Security.1 msg asm_mydelay1ms cmd2LCD 
                                 STRING.Initializing...2 temp STRING.Initializing...3 
                                 STRING.Initializing...4 STRING.Initializing...5 putsLCD_fast 
-                                STRING..Set.a.Password..6 checkKeyPad STRING...7 putsLCD 
+                                STRING..Set.a.Password..6 checkKeyPad count password STRING...7 putsLCD 
                                 STRING..Password.Set..8 _BDIVMODS 
 cmd2LCD                   USES _PORTK asm_mydelay10us 
 openLCD                   USES _DDRK asm_mydelay1ms cmd2LCD 
@@ -1988,5 +1990,5 @@ STATISTIC SECTION
 ExeFile:
 --------
 Number of blocks to be downloaded: 7
-Total size of all blocks to be downloaded: 901
+Total size of all blocks to be downloaded: 920
 
