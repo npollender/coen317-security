@@ -21,43 +21,15 @@ char count = 0x00;
 char count_check =0x00;
 char attempts = 3;
 char Locked = 0;
-char bttn_ENTER_read = 0;
-
-
-#pragma CODE_SEG NON_BANKED 
-
- // Interrupt Service Routine for PORTH
- interrupt void bttnHISR(void) 
- {
-  if(PIFH == 0x01){
-    bttn_ENTER_read = 1;
-  }
-  asm_mydelay1ms(100);
-  PIEH = 0x00;
-  PIFH = 0x0F; //Clear Interupt Flag
-  PIEH = 0x0F;
-  cmd2LCD(CLR_LCD);
-  putsLCD("Interrupt Happened...");
- }
- 
-#pragma CODE_SEG DEFAULT
- typedef void (*near tIsrFunc)(void);
- const tIsrFunc _vect[] @0xFFCC = { 
-    /* Interrupt table */
-    bttnHISR
- };   
-
+   
+   
 void main(void) 
 {
-	//Enable Interrupts
-	EnableInterrupts;;
   //Set Port E as output (Some bits are used by the keypad)
   DDRE = 0x00;
   
   //Set Bit 0 of Port H as an input for the enter button
   DDRH = 0x00;
-  
-  PPSH = 0x00;
   
 	//Configure LCD
 	openLCD();
@@ -93,7 +65,6 @@ void main(void)
 	  
 	}
 	
-	PIEH = 0x0F;
   setPassword();
 		
 	while(1) 
@@ -105,7 +76,6 @@ void main(void)
 	    cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
 	    putsLCD("Press 2 to chg pass");
 	    Locked = 2;
-	    temp = 0;
 	  } 
 	  else if(Locked == 2) 
 	  {
@@ -189,11 +159,11 @@ void main(void)
     /*
     * User pressed Enter. Verify if password matches.
     */
-      if(temp == 0x0A) 
-      {
-        checkPassword();
-      }
-	  }
+    if(temp == 0x0A) 
+    {
+      checkPassword();
+    }
+	}
 	}
 }
 
@@ -304,74 +274,72 @@ void putsLCD_fast(char *ptr)
 // If enter was pressed, value of 0x0A is returned
 char checkKeyPad(void) 
 {
-
-      //Button 1
-      if(!PTH_PTH6) 
-      {
-        while(!PTH_PTH6);
-        return 0x01;
-      }
-      // Button 2
-      if(!PTH_PTH7) 
-      {
-        while(!PTH_PTH7);
-        return 0x02;
-      }
-      //Button 3
-      if(!PTH_PTH5) 
-      {
-        while(!PTH_PTH5);
-        return 0x03;
-      }
-      //Button 4
-      if(!PTH_PTH4) 
-      { 
-        while(!PTH_PTH4);
-        return 0x04;
-      }
-      //Button 5
-      if(!PORTE_BIT7) 
-      {
-        while(!PORTE_BIT7);
-        return 0x05;
-      }
-      //Button 6
-      if(!PORTE_BIT4) 
-      {
-        while(!PORTE_BIT4);
-        return 0x06;
-      }
-      //Button 7
-      if(!PTH_PTH2) 
-      {
-      while(!PTH_PTH2);
-        return 0x07;
-      }
-      //Button 8
-      if(!PTH_PTH3) 
-      {
-      while(!PTH_PTH3);
-        return 0x08;
-      }
-      //Button 9
-      if(!PTH_PTH1) 
-      {
-      while(!PTH_PTH1);
-        return 0x09;
-      }
-      //Button 0
-      if(!PORTE_BIT0) 
-      {
-      while(!PORTE_BIT0);
-        return 0x00; 
-      }
-      //Enter button
-      if(!PTH_PTH0 && bttn_ENTER_read) 
-      {
-        while(!PTH_PTH0);
-        bttn_ENTER_read = 0;
-        return 0x0A;
-      }
+//Button 1
+    if(!PTH_PTH6) 
+    {
+      while(!PTH_PTH6);
+      return 0x01;
+    }
+    // Button 2
+    if(!PTH_PTH7) 
+    {
+      while(!PTH_PTH7);
+      return 0x02;
+    }
+    //Button 3
+    if(!PTH_PTH5) 
+    {
+      while(!PTH_PTH5);
+      return 0x03;
+    }
+    //Button 4
+    if(!PTH_PTH4) 
+    { 
+      while(!PTH_PTH4);
+      return 0x04;
+    }
+    //Button 5
+    if(!PORTE_BIT7) 
+    {
+      while(!PORTE_BIT7);
+      return 0x05;
+    }
+    //Button 6
+    if(!PORTE_BIT4) 
+    {
+      while(!PORTE_BIT4);
+      return 0x06;
+    }
+    //Button 7
+    if(!PTH_PTH2) 
+    {
+    while(!PTH_PTH2);
+      return 0x07;
+    }
+    //Button 8
+    if(!PTH_PTH3) 
+    {
+    while(!PTH_PTH3);
+      return 0x08;
+    }
+    //Button 9
+    if(!PTH_PTH1) 
+    {
+    while(!PTH_PTH1);
+      return 0x09;
+    }
+    //Button 0
+    if(!PORTE_BIT0) 
+    {
+    while(!PORTE_BIT0);
+      return 0x00; 
+    }
+    //Enter button
+    if(!PTH_PTH0) 
+    {
+      while(!PTH_PTH0);
+      return 0x0A;
+    }
     return 0x0f;
 }
 
