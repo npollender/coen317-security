@@ -1,5 +1,5 @@
 *** EVALUATION ***
-PROGRAM "D:\dev\CodeWarrior\COEN317-security\bin\Project.absHCS12_Serial_Monitor.abs"
+PROGRAM "E:\dev\CodeWarrior\coen317-security\bin\Project.absHCS12_Serial_Monitor.abs"
 
 *********************************************************************************************
 TARGET SECTION
@@ -26,7 +26,7 @@ _startupData is allocated at 0xC015 and uses 14 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
   _Range   pZeroOut       0x1100     15
-  _Copy    *toCopyDownBeg 0xC160
+  _Copy    *toCopyDownBeg 0xC17E
   int      nofInitBodies  0
   _Cpp     *initBodies    0xC027
   int      nofFiniBodies  0
@@ -39,10 +39,10 @@ Section Name                    Size  Type     From       To       Segment
 ---------------------------------------------------------------------------------------------
 .init                             21     R     0xC000     0xC014   ROM_C000
 .startData                        18     R     0xC015     0xC026   ROM_C000
-.rodata1                         243     R     0xC027     0xC119   ROM_C000
-NON_BANKED                        70     R     0xC11A     0xC15F   ROM_C000
-.copy                              7     R     0xC160     0xC166   ROM_C000
-.text                            741     R   0x308000   0x3082E4   PAGE_30
+.rodata1                         228     R     0xC027     0xC10A   ROM_C000
+NON_BANKED                       115     R     0xC10B     0xC17D   ROM_C000
+.copy                              7     R     0xC17E     0xC184   ROM_C000
+.text                            752     R   0x308000   0x3082EF   PAGE_30
 .stack                           256   R/W     0x1000     0x10FF   RAM
 .data                              1   R/W     0x1100     0x1100   RAM
 .abs_section_8                     1   N/I        0x8        0x8   .absSeg0
@@ -387,14 +387,15 @@ NON_BANKED                        70     R     0xC11A     0xC15F   ROM_C000
 .abs_section_2ae                   2   N/I      0x2AE      0x2AF   .absSeg339
 .abs_section_2be                   2   N/I      0x2BE      0x2BF   .absSeg340
 .abs_section_ffcc                  2     R     0xFFCC     0xFFCD   .absSeg341
+.abs_section_ffde                  2     R     0xFFDE     0xFFDF   .absSeg342
 .bss                               4   R/W     0x1101     0x1104   RAM
 .common                            8   R/W     0x1105     0x110C   RAM
-CodeSec                           68     R   0x3082E5   0x308328   PAGE_30
+CodeSec                           68     R   0x3082F0   0x308333   PAGE_30
 DataSec                            2   R/W     0x110D     0x110E   RAM
-.vectSeg342_vect                   2     R     0xFFFE     0xFFFF   .vectSeg342
+.vectSeg343_vect                   2     R     0xFFFE     0xFFFF   .vectSeg343
 
 Summary of section sizes per section type:
-READ_ONLY (R):         494 (dec:     1172)
+READ_ONLY (R):         4BF (dec:     1215)
 READ_WRITE (R/W):      10F (dec:      271)
 NO_INIT (N/I):         190 (dec:      400)
 
@@ -452,16 +453,16 @@ MODULE:                 -- mc9s12dg256.c.o --
      _CFORC                                      41       1       1       0   .abs_section_41
      _OC7M                                       42       1       1       0   .abs_section_42
      _OC7D                                       43       1       1       0   .abs_section_43
-     _TSCR1                                      46       1       1       0   .abs_section_46
+     _TSCR1                                      46       1       1       3   .abs_section_46
      _TTOV                                       47       1       1       0   .abs_section_47
      _TCTL1                                      48       1       1       0   .abs_section_48
      _TCTL2                                      49       1       1       0   .abs_section_49
      _TCTL3                                      4A       1       1       0   .abs_section_4a
      _TCTL4                                      4B       1       1       0   .abs_section_4b
      _TIE                                        4C       1       1       0   .abs_section_4c
-     _TSCR2                                      4D       1       1       0   .abs_section_4d
+     _TSCR2                                      4D       1       1       4   .abs_section_4d
      _TFLG1                                      4E       1       1       0   .abs_section_4e
-     _TFLG2                                      4F       1       1       0   .abs_section_4f
+     _TFLG2                                      4F       1       1       1   .abs_section_4f
      _PACTL                                      60       1       1       0   .abs_section_60
      _PAFLG                                      61       1       1       0   .abs_section_61
      _MCCTL                                      66       1       1       0   .abs_section_66
@@ -622,12 +623,12 @@ MODULE:                 -- mc9s12dg256.c.o --
      _PIFP                                      25F       1       1       0   .abs_section_25f
      _PTH                                       260       1       1       0   .abs_section_260
      _PTIH                                      261       1       1       0   .abs_section_261
-     _DDRH                                      262       1       1       1   .abs_section_262
+     _DDRH                                      262       1       1       4   .abs_section_262
      _RDRH                                      263       1       1       0   .abs_section_263
      _PERH                                      264       1       1       0   .abs_section_264
      _PPSH                                      265       1       1       1   .abs_section_265
-     _PIEH                                      266       1       1       2   .abs_section_266
-     _PIFH                                      267       1       1       2   .abs_section_267
+     _PIEH                                      266       1       1       3   .abs_section_266
+     _PIFH                                      267       1       1       0   .abs_section_267
      _PTJ                                       268       1       1       0   .abs_section_268
      _PTIJ                                      269       1       1       0   .abs_section_269
      _DDRJ                                      26A       1       1       0   .abs_section_26a
@@ -696,7 +697,7 @@ MODULE:                 -- mc9s12dg256.c.o --
      _PORTAB                                      0       2       2       0   .abs_section_0
      _DDRAB                                       2       2       2       0   .abs_section_2
      _PARTID                                     1A       2       2       0   .abs_section_1a
-     _TCNT                                       44       2       2       0   .abs_section_44
+     _TCNT                                       44       2       2       1   .abs_section_44
      _TC0                                        50       2       2       0   .abs_section_50
      _TC1                                        52       2       2       0   .abs_section_52
      _TC2                                        54       2       2       0   .abs_section_54
@@ -762,59 +763,61 @@ MODULE:                 -- Start12.cpp.o --
      __SEG_END_SSTACK                          1100       0       0       1               
 MODULE:                 -- rtshc12.c.o (ansibi.lib) --
 - PROCEDURES:
-     _BDIVMODS                                 C11A       B      11       1   NON_BANKED  
-     _CASE_CHECKED_BYTE                        C125      14      20       1   NON_BANKED  
+     _BDIVMODS                                 C10B       B      11       2   NON_BANKED  
+     _CASE_CHECKED_BYTE                        C116      14      20       2   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- mixasm.asm.o --
 - PROCEDURES:
-     asm_mydelay1ms                          3082E5       7       7      18   CodeSec     
-     oloop                                   3082EC       3       3       0   CodeSec     
-     iloop                                   3082EF      11      17       0   CodeSec     
-     next                                    308300       5       5       0   CodeSec     
-     fini                                    308305       2       2       0   CodeSec     
-     asm_mydelay10us                         308307       7       7       4   CodeSec     
-     uoloop                                  30830E       3       3       0   CodeSec     
-     uiloop                                  308311      11      17       0   CodeSec     
-     unext                                   308322       5       5       0   CodeSec     
-     ufini                                   308327       2       2       0   CodeSec     
+     asm_mydelay1ms                          3082F0       7       7      16   CodeSec     
+     oloop                                   3082F7       3       3       0   CodeSec     
+     iloop                                   3082FA      11      17       0   CodeSec     
+     next                                    30830B       5       5       0   CodeSec     
+     fini                                    308310       2       2       0   CodeSec     
+     asm_mydelay10us                         308312       7       7       4   CodeSec     
+     uoloop                                  308319       3       3       0   CodeSec     
+     uiloop                                  30831C      11      17       0   CodeSec     
+     unext                                   30832D       5       5       0   CodeSec     
+     ufini                                   308332       2       2       0   CodeSec     
 - VARIABLES:
      ASMData1ms                                110D       1       1       2   DataSec     
      ASMData10us                               110E       1       1       2   DataSec     
 MODULE:                 -- main.c.o --
 - PROCEDURES:
-     main                                    30803E      BA     186       2   .text       
-     cmd2LCD                                 3080F8      3E      62      34   .text       
-     openLCD                                 308136      2F      47       2   .text       
-     putcLCD                                 308165      42      66       4   .text       
-     putsLCD                                 3081A7      32      50      18   .text       
-     putsLCD_fast                            3081D9      10      16       2   .text       
-     checkPassword                           3081E9      67     103       2   .text       
-     wrongPassword                           308250      7C     124       4   .text       
-     setPassword                             3082CC      19      25       2   .text       
-     bttnHISR                                  C139      27      39       1   NON_BANKED  
+     main                                    30803E      C5     197       2   .text       
+     cmd2LCD                                 308103      3E      62      36   .text       
+     openLCD                                 308141      2F      47       2   .text       
+     putcLCD                                 308170      42      66       4   .text       
+     putsLCD                                 3081B2      32      50      18   .text       
+     putsLCD_fast                            3081E4      10      16       2   .text       
+     checkPassword                           3081F4      67     103       2   .text       
+     wrongPassword                           30825B      7C     124       4   .text       
+     setPassword                             3082D7      19      25       2   .text       
+     bttnHISR                                  C12A       4       4       1   NON_BANKED  
+     timerOverflow                             C12E      50      80       1   NON_BANKED  
 - VARIABLES:
-     STRING.Interrupt.Happened...1             C027      16      22       1   .rodata1    
-     STRING..Hello.world.2                     C03D       D      13       1   .rodata1    
-     STRING.Initializing...3                   C04A       F      15       1   .rodata1    
-     STRING.Initializing...4                   C059       F      15       1   .rodata1    
-     STRING.Initializing...5                   C068       F      15       1   .rodata1    
-     STRING.Initializing...6                   C077       F      15       1   .rodata1    
-     STRING..Correct..7                        C086       A      10       1   .rodata1    
-     STRING.Unlocking....8                     C090       D      13       1   .rodata1    
-     STRING..Wrong.Password..9                 C09D      11      17       1   .rodata1    
-     STRING.2.Tries.Left..10                   C0AE       E      14       1   .rodata1    
-     STRING.1.Try.Left..11                     C0BC       C      12       1   .rodata1    
-     STRING.No.Attempts.Left..12               C0C8      12      18       1   .rodata1    
-     STRING..Enter.Password..13                C0DA      11      17       1   .rodata1    
-     STRING..Device.Permanently.14             C0EB      14      20       1   .rodata1    
-     STRING.Locked..15                         C0FF       8       8       1   .rodata1    
-     STRING..Enter.a.Password..16              C107      13      19       1   .rodata1    
+     STRING..0.1                               C027       3       3       1   .rodata1    
+     STRING..COEN317.Security.2                C02A      12      18       1   .rodata1    
+     STRING.Initializing...3                   C03C       F      15       1   .rodata1    
+     STRING.Initializing...4                   C04B       F      15       1   .rodata1    
+     STRING.Initializing...5                   C05A       F      15       1   .rodata1    
+     STRING.Initializing...6                   C069       F      15       1   .rodata1    
+     STRING..Correct..7                        C078       A      10       1   .rodata1    
+     STRING.Unlocking....8                     C082       D      13       1   .rodata1    
+     STRING..Wrong.Password..9                 C08F      11      17       1   .rodata1    
+     STRING.2.Tries.Left..10                   C0A0       E      14       1   .rodata1    
+     STRING.1.Try.Left..11                     C0AE       C      12       1   .rodata1    
+     STRING.No.Attempts.Left..12               C0BA      12      18       1   .rodata1    
+     STRING..Enter.Password..13                C0CC      11      17       1   .rodata1    
+     STRING..Device.Permanently.14             C0DD      14      20       1   .rodata1    
+     STRING.Locked..15                         C0F1       8       8       1   .rodata1    
+     STRING..Enter.a.Password.16               C0F9      12      18       1   .rodata1    
      attempts                                  1100       1       1       4   .data       
      temp                                      1101       1       1       8   .bss        
      count                                     1102       1       1       3   .bss        
      count_check                               1103       1       1       1   .bss        
-     bttn_ENTER_read                           1104       1       1       1   .bss        
+     keypad_pin_toggle                         1104       1       1       3   .bss        
      _vect                                     FFCC       2       2       0   .abs_section_ffcc
+     _vect2                                    FFDE       2       2       0   .abs_section_ffde
      msg                                       1105       2       2      12   .common     
      password                                  1107       2       2       1   .common     
      password_check                            1109       2       2       1   .common     
@@ -828,7 +831,7 @@ MODULE STATISTIC
   Start12.cpp.o                                0     83      0
   rtshc12.c.o (ansibi.lib)                     0     31      0
   mixasm.asm.o                                 2     68      0
-  main.c.o                                    13    718    245
+  main.c.o                                    13    774    232
   other                                      256     20      7
 
 *********************************************************************************************
@@ -840,18 +843,18 @@ SECTION: ".text"
 SECTION: ".data"
   attempts 
 SECTION: ".bss"
-  temp count count_check bttn_ENTER_read 
+  temp count count_check keypad_pin_toggle 
 SECTION: ".init"
   _Startup 
 SECTION: ".rodata1"
-  STRING.Interrupt.Happened...1 STRING..Hello.world.2 STRING.Initializing...3 
+  STRING..0.1 STRING..COEN317.Security.2 STRING.Initializing...3 
   STRING.Initializing...4 STRING.Initializing...5 STRING.Initializing...6 
   STRING..Correct..7 STRING.Unlocking....8 STRING..Wrong.Password..9 
   STRING.2.Tries.Left..10 STRING.1.Try.Left..11 STRING.No.Attempts.Left..12 
   STRING..Enter.Password..13 STRING..Device.Permanently.14 STRING.Locked..15 
-  STRING..Enter.a.Password..16 
+  STRING..Enter.a.Password.16 
 SECTION: "NON_BANKED"
-  _BDIVMODS _CASE_CHECKED_BYTE bttnHISR 
+  _BDIVMODS _CASE_CHECKED_BYTE bttnHISR timerOverflow 
 SECTION: ".abs_section_8"
   _PORTE 
 SECTION: ".abs_section_9"
@@ -1543,6 +1546,8 @@ SECTION: "DataSec"
   ASMData1ms ASMData10us 
 SECTION: ".abs_section_ffcc"
   _vect 
+SECTION: ".abs_section_ffde"
+  _vect2 
 
 *********************************************************************************************
 OBJECT LIST SORTED BY ADDRESS
@@ -1592,17 +1597,17 @@ OBJECT LIST SORTED BY ADDRESS
      _CFORC                                      41       1       1       0   .abs_section_41
      _OC7M                                       42       1       1       0   .abs_section_42
      _OC7D                                       43       1       1       0   .abs_section_43
-     _TCNT                                       44       2       2       0   .abs_section_44
-     _TSCR1                                      46       1       1       0   .abs_section_46
+     _TCNT                                       44       2       2       1   .abs_section_44
+     _TSCR1                                      46       1       1       3   .abs_section_46
      _TTOV                                       47       1       1       0   .abs_section_47
      _TCTL1                                      48       1       1       0   .abs_section_48
      _TCTL2                                      49       1       1       0   .abs_section_49
      _TCTL3                                      4A       1       1       0   .abs_section_4a
      _TCTL4                                      4B       1       1       0   .abs_section_4b
      _TIE                                        4C       1       1       0   .abs_section_4c
-     _TSCR2                                      4D       1       1       0   .abs_section_4d
+     _TSCR2                                      4D       1       1       4   .abs_section_4d
      _TFLG1                                      4E       1       1       0   .abs_section_4e
-     _TFLG2                                      4F       1       1       0   .abs_section_4f
+     _TFLG2                                      4F       1       1       1   .abs_section_4f
      _TC0                                        50       2       2       0   .abs_section_50
      _TC1                                        52       2       2       0   .abs_section_52
      _TC2                                        54       2       2       0   .abs_section_54
@@ -1816,12 +1821,12 @@ OBJECT LIST SORTED BY ADDRESS
      _PIFP                                      25F       1       1       0   .abs_section_25f
      _PTH                                       260       1       1       0   .abs_section_260
      _PTIH                                      261       1       1       0   .abs_section_261
-     _DDRH                                      262       1       1       1   .abs_section_262
+     _DDRH                                      262       1       1       4   .abs_section_262
      _RDRH                                      263       1       1       0   .abs_section_263
      _PERH                                      264       1       1       0   .abs_section_264
      _PPSH                                      265       1       1       1   .abs_section_265
-     _PIEH                                      266       1       1       2   .abs_section_266
-     _PIFH                                      267       1       1       2   .abs_section_267
+     _PIEH                                      266       1       1       3   .abs_section_266
+     _PIFH                                      267       1       1       0   .abs_section_267
      _PTJ                                       268       1       1       0   .abs_section_268
      _PTIJ                                      269       1       1       0   .abs_section_269
      _DDRJ                                      26A       1       1       0   .abs_section_26a
@@ -1893,7 +1898,7 @@ OBJECT LIST SORTED BY ADDRESS
      temp                                      1101       1       1       8   .bss        
      count                                     1102       1       1       3   .bss        
      count_check                               1103       1       1       1   .bss        
-     bttn_ENTER_read                           1104       1       1       1   .bss        
+     keypad_pin_toggle                         1104       1       1       3   .bss        
      msg                                       1105       2       2      12   .common     
      password                                  1107       2       2       1   .common     
      password_check                            1109       2       2       1   .common     
@@ -1901,46 +1906,48 @@ OBJECT LIST SORTED BY ADDRESS
      ASMData1ms                                110D       1       1       2   DataSec     
      ASMData10us                               110E       1       1       2   DataSec     
      _Startup                                  C000      15      21       0   .init       
-     STRING.Interrupt.Happened...1             C027      16      22       1   .rodata1    
-     STRING..Hello.world.2                     C03D       D      13       1   .rodata1    
-     STRING.Initializing...3                   C04A       F      15       1   .rodata1    
-     STRING.Initializing...4                   C059       F      15       1   .rodata1    
-     STRING.Initializing...5                   C068       F      15       1   .rodata1    
-     STRING.Initializing...6                   C077       F      15       1   .rodata1    
-     STRING..Correct..7                        C086       A      10       1   .rodata1    
-     STRING.Unlocking....8                     C090       D      13       1   .rodata1    
-     STRING..Wrong.Password..9                 C09D      11      17       1   .rodata1    
-     STRING.2.Tries.Left..10                   C0AE       E      14       1   .rodata1    
-     STRING.1.Try.Left..11                     C0BC       C      12       1   .rodata1    
-     STRING.No.Attempts.Left..12               C0C8      12      18       1   .rodata1    
-     STRING..Enter.Password..13                C0DA      11      17       1   .rodata1    
-     STRING..Device.Permanently.14             C0EB      14      20       1   .rodata1    
-     STRING.Locked..15                         C0FF       8       8       1   .rodata1    
-     STRING..Enter.a.Password..16              C107      13      19       1   .rodata1    
-     _BDIVMODS                                 C11A       B      11       1   NON_BANKED  
-     _CASE_CHECKED_BYTE                        C125      14      20       1   NON_BANKED  
-     bttnHISR                                  C139      27      39       1   NON_BANKED  
+     STRING..0.1                               C027       3       3       1   .rodata1    
+     STRING..COEN317.Security.2                C02A      12      18       1   .rodata1    
+     STRING.Initializing...3                   C03C       F      15       1   .rodata1    
+     STRING.Initializing...4                   C04B       F      15       1   .rodata1    
+     STRING.Initializing...5                   C05A       F      15       1   .rodata1    
+     STRING.Initializing...6                   C069       F      15       1   .rodata1    
+     STRING..Correct..7                        C078       A      10       1   .rodata1    
+     STRING.Unlocking....8                     C082       D      13       1   .rodata1    
+     STRING..Wrong.Password..9                 C08F      11      17       1   .rodata1    
+     STRING.2.Tries.Left..10                   C0A0       E      14       1   .rodata1    
+     STRING.1.Try.Left..11                     C0AE       C      12       1   .rodata1    
+     STRING.No.Attempts.Left..12               C0BA      12      18       1   .rodata1    
+     STRING..Enter.Password..13                C0CC      11      17       1   .rodata1    
+     STRING..Device.Permanently.14             C0DD      14      20       1   .rodata1    
+     STRING.Locked..15                         C0F1       8       8       1   .rodata1    
+     STRING..Enter.a.Password.16               C0F9      12      18       1   .rodata1    
+     _BDIVMODS                                 C10B       B      11       2   NON_BANKED  
+     _CASE_CHECKED_BYTE                        C116      14      20       2   NON_BANKED  
+     bttnHISR                                  C12A       4       4       1   NON_BANKED  
+     timerOverflow                             C12E      50      80       1   NON_BANKED  
      _vect                                     FFCC       2       2       0   .abs_section_ffcc
+     _vect2                                    FFDE       2       2       0   .abs_section_ffde
      Init__Fv                                308000      3E      62       2   .text       
-     main                                    30803E      BA     186       2   .text       
-     cmd2LCD                                 3080F8      3E      62      34   .text       
-     openLCD                                 308136      2F      47       2   .text       
-     putcLCD                                 308165      42      66       4   .text       
-     putsLCD                                 3081A7      32      50      18   .text       
-     putsLCD_fast                            3081D9      10      16       2   .text       
-     checkPassword                           3081E9      67     103       2   .text       
-     wrongPassword                           308250      7C     124       4   .text       
-     setPassword                             3082CC      19      25       2   .text       
-     asm_mydelay1ms                          3082E5       7       7      18   CodeSec     
-     oloop                                   3082EC       3       3       0   CodeSec     
-     iloop                                   3082EF      11      17       0   CodeSec     
-     next                                    308300       5       5       0   CodeSec     
-     fini                                    308305       2       2       0   CodeSec     
-     asm_mydelay10us                         308307       7       7       4   CodeSec     
-     uoloop                                  30830E       3       3       0   CodeSec     
-     uiloop                                  308311      11      17       0   CodeSec     
-     unext                                   308322       5       5       0   CodeSec     
-     ufini                                   308327       2       2       0   CodeSec     
+     main                                    30803E      C5     197       2   .text       
+     cmd2LCD                                 308103      3E      62      36   .text       
+     openLCD                                 308141      2F      47       2   .text       
+     putcLCD                                 308170      42      66       4   .text       
+     putsLCD                                 3081B2      32      50      18   .text       
+     putsLCD_fast                            3081E4      10      16       2   .text       
+     checkPassword                           3081F4      67     103       2   .text       
+     wrongPassword                           30825B      7C     124       4   .text       
+     setPassword                             3082D7      19      25       2   .text       
+     asm_mydelay1ms                          3082F0       7       7      16   CodeSec     
+     oloop                                   3082F7       3       3       0   CodeSec     
+     iloop                                   3082FA      11      17       0   CodeSec     
+     next                                    30830B       5       5       0   CodeSec     
+     fini                                    308310       2       2       0   CodeSec     
+     asm_mydelay10us                         308312       7       7       4   CodeSec     
+     uoloop                                  308319       3       3       0   CodeSec     
+     uiloop                                  30831C      11      17       0   CodeSec     
+     unext                                   30832D       5       5       0   CodeSec     
+     ufini                                   308332       2       2       0   CodeSec     
 
 *********************************************************************************************
 UNUSED-OBJECTS SECTION
@@ -1957,17 +1964,19 @@ main.c.o:
 NOT USED VARIABLES
 rtshc12.c.o (ansibi.lib):
   _PowOfTwo_8 _PowOfTwo_16 _PowOfTwo_32 errno 
+main.c.o:
+  bttn_ENTER_read 
 
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0xC160 ---- SIZE       4 ---
+------- ROM-ADDRESS: 0xC17E ---- SIZE       4 ---
 Filling bytes inserted
  00011100
-------- ROM-ADDRESS: 0xC164 ---- RAM-ADDRESS: 0x1100 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0xC182 ---- RAM-ADDRESS: 0x1100 ---- SIZE       1 ---
 Name of initialized Object : attempts
  03
-------- ROM-ADDRESS: 0xC165 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xC183 ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -1975,15 +1984,17 @@ Filling bytes inserted
 OBJECT-DEPENDENCIES SECTION
 ---------------------------------------------------------------------------------------------
 _Startup                  USES __SEG_END_SSTACK Init__Fv main 
-bttnHISR                  USES _PIFH bttn_ENTER_read asm_mydelay1ms _PIEH 
-                                cmd2LCD STRING.Interrupt.Happened...1 putsLCD 
+bttnHISR                  USES _PIEH 
+timerOverflow             USES _TSCR1 _TSCR2 keypad_pin_toggle _BDIVMODS 
+                                _CASE_CHECKED_BYTE _DDRH cmd2LCD STRING..0.1 putsLCD _TCNT _TFLG2 
 _vect                     USES bttnHISR 
+_vect2                    USES timerOverflow 
 Init__Fv                  USES _startupData 
-main                      USES _DDRH _PPSH state openLCD cmd2LCD 
-                                STRING..Hello.world.2 msg putsLCD STRING.Initializing...3 temp 
-                                STRING.Initializing...4 STRING.Initializing...5 
-                                STRING.Initializing...6 putsLCD_fast setPassword checkPassword 
-                                asm_mydelay1ms _BDIVMODS 
+main                      USES openLCD cmd2LCD _DDRH _PPSH _PIEH _TSCR2 _TSCR1 
+                                state STRING..COEN317.Security.2 msg putsLCD 
+                                STRING.Initializing...3 temp STRING.Initializing...4 
+                                STRING.Initializing...5 STRING.Initializing...6 putsLCD_fast 
+                                setPassword checkPassword asm_mydelay1ms _BDIVMODS 
 cmd2LCD                   USES _PORTK asm_mydelay10us 
 openLCD                   USES _DDRK asm_mydelay1ms cmd2LCD 
 putcLCD                   USES _PORTK asm_mydelay10us 
@@ -1997,7 +2008,7 @@ wrongPassword             USES cmd2LCD STRING..Wrong.Password..9 attempts
                                 STRING.1.Try.Left..11 STRING.No.Attempts.Left..12 putsLCD 
                                 asm_mydelay1ms STRING..Enter.Password..13 
                                 STRING..Device.Permanently.14 STRING.Locked..15 state 
-setPassword               USES STRING..Enter.a.Password..16 putsLCD cmd2LCD 
+setPassword               USES STRING..Enter.a.Password.16 putsLCD cmd2LCD 
                                 _PIEH state 
 iloop                     USES ASMData1ms 
 next                      USES ASMData1ms 
@@ -2072,8 +2083,14 @@ DEPENDENCY TREE
  _vect               
  | 
  +- bttnHISR            
+      
+ _vect2              
+ | 
+ +- timerOverflow       
     | 
-    +- asm_mydelay1ms       (see above)
+    +- _BDIVMODS            (see above)
+    |  
+    +- _CASE_CHECKED_BYTE   (see above)
     |  
     +- cmd2LCD              (see above)
     |  
@@ -2085,6 +2102,6 @@ STATISTIC SECTION
 
 ExeFile:
 --------
-Number of blocks to be downloaded: 9
-Total size of all blocks to be downloaded: 1172
+Number of blocks to be downloaded: 8
+Total size of all blocks to be downloaded: 1215
 
