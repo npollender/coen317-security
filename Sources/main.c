@@ -3,68 +3,116 @@
 #include "mixasm.h"
 #include "lcd_commands.h"
 
+#define MAX_LENGTH 16
 
-// Function Prototypes
+
+/*
+*  Function Prototypes
+*/
 void cmd2LCD (char cmd);
 void openLCD(void);
 void putcLCD(char cx);
 void putsLCD_fast(char *ptr);
 void putsLCD(char *ptr); 
-char checkKeyPad(void);
+void checkKeyPad(void);
 void checkPassword(void);
 void wrongPassword(void);
 void setPassword(void);
+void lockDevice(void);
 
-// Application Variables
+/*
+*  Application Variables
+*/
 char* msg;
-char* password;
-char* password_check;
-char temp = 0x00;
-char count = 0x00;
-char count_check =0x00;
-char keypad_pin_toggle = 0;
+char password[MAX_LENGTH];
+char password_check[MAX_LENGTH];
+char temp;
+char count;
+char count_check;
+char it = 0x00;
 char attempts = 3;
-enum { INIT, LOCKED, SETTING, UNLOCKED, CHECK} state;
-char bttn_ENTER_read = 0;
+enum { INIT, LOCKED, SETTING, UNLOCKED, CHECK, SET} state;
 
 
- // Interrupt Service Routine for PORTH button press
+/**********************************************************
+*  
+* ISR for button press
+*
+***********************************************************/
 #pragma CODE_SEG NON_BANKED 
  interrupt void bttnHISR(void) 
  {
-  
+ 
   // Disable Further Interrupts until this one is processed
   PIEH = 0x00;
   
-  // Determine what action to take depending on the state of the
-  // program
+  // Determine what action to take depending on the state of the program
+  switch(state) 
+  {
+    case SETTING:
+      checkKeyPad();
+      break;
+      
+    case LOCKED:
+      checkKeyPad();
+      break;
+      
+    case UNLOCKED:
+      checkKeyPad();
+      break;
+      
+    default:
+      break;
+  }
+  
+  asm_mydelay1ms(25);
+  
+  // Clear Interrupt Flags
+  PIFH = 0xFF;
+  
+  // Enable Interrupts
+  PIEH = 0xFF;
  }
 
-// Interrupt Service Routine for timer overflow
-// Cycles through the output modes of porth's 4 LSB's in order to detect button presses
+/**********************************************************
+*  
+* ISR for Timer Overflow (Not Used)
+*
+***********************************************************/
+/*
 interrupt void timerOverflow(void) 
 {
   // Stop Counter
   TSCR1 = 0x00;
   // Disable Overflow interrupts
   TSCR2 &= 0x7F;
-  switch(keypad_pin_toggle%4) 
+  
+  PTH &= 0xF0;
+  
+  switch(keypad_pin_toggle%20) 
   {
     case 0:
-      DDRH = 0xFE;
+      DDRH = 0x01;
+      active = COL0;
       keypad_pin_toggle++;
       break;
-    case 1:
-      DDRH = 0xFD;
+    case 5:
+      DDRH = 0x02;
+      active = COL1;
       keypad_pin_toggle++;
       break;
-    case 2:
-      DDRH = 0xFB;
+    case 10:
+      DDRH = 0x04;
+      active = COL2;
       keypad_pin_toggle++;
       break;
-    case 3:
-      DDRH = 0xF7;
+    case 15:
+      DDRH = 0x08;
+      active = COL3;
       keypad_pin_toggle = 0;
+      break;
+    default:
+      keypad_pin_toggle++;
       break;
   }
   
@@ -77,24 +125,40 @@ interrupt void timerOverflow(void)
   // Clear the Overflow interrupt flag
   TFLG2 = 0xFF;
 }
+*/
 
 
-// Assign the ISR to the appropriate vector address for PORT H (0xFFCC) 
+/**********************************************************
+*  
+* Assign ISR function pointer to the dedicated vector address
+* for port H. (Address 0xFFCC)
+*
+***********************************************************/
 #pragma CODE_SEG DEFAULT
  typedef void (*near tIsrFunc)(void);
  const tIsrFunc _vect[] @0xFFCC = 
  { 
-    /* Interrupt table */
     bttnHISR
  };  
  
- // Assign the ISR of the timer overflow to the appropriate vector address for the enhanced capture timer overflow (0xFFDE)
+/**********************************************************
+*  
+* Assign ISR function pointer to the dedicated vector address
+* for timer overflow. (Address 0xFFDE) (Not Used)
+*
+***********************************************************/
+ /*
  const tIsrFunc _vect2[] @0xFFDE = 
  { 
-    /* Interrupt table */
     timerOverflow
- };   
+ }; 
+ */  
 
+/**********************************************************
+*  
+* Main Function
+*
+***********************************************************/
 void main(void) 
 {
 
@@ -105,31 +169,16 @@ void main(void)
 	//Enable Interrupts
 	EnableInterrupts;;
 	
-  // Set Half of PORT H pins as inputs and half as outputs.
-  // This port is used by the keypad to generate interrupts on key press.
-  // The reason for dividing half the port as input/output is to produce a matrix interconnect of the buttons
-  // to utilize less pins for the amount of available buttons. Refer to the dragon-12 user guide for more info.
-  DDRH = 0xF0;
+  // Set Port H pins as outputs. When a button press occurs, it grounds the corresponding
+  // pin and sends an interrupt to the cpu.
+  DDRH = 0x00;
   
-  // Set all of PORT H's pins to send an interrupt signal whenever one of the pins receives a rising edges, signifying a button press.
-  PPSH = 0x00;
+  // Set all of PORT H's pins to send an interrupt on falling edge (from 1 to 0)
+  PPSH = 0xFF;
   
   // Disable PORT H interrupts until further notice
   PIEH = 0x00;
   
-  // Enable Interrupt on Timer Overflow (When TCNT goes from 0xFFFF to 0x0000)
-  TSCR2 = 0x80;
-  
-  // Set the pre-scale value to 128 to avoid the Timer ISR consuming too much of the CPU's bandwidth
-  TSCR2 |= 0x03;
-  
-  // Enable the Free-Running 16 bit internal timer module
-  // The Timer will produce an interrupt everytime it overflows.
-  // These interrupts will be used to alternate the high signal sent through the keypad's
-  // Rows to be able to know which key has been pressed. (Again, refer to Dragon-12 Light User guide for more info)
-  TSCR1 = 0x80;
-  
- 
   // Set initial State of Program
   state = INIT;
 	
@@ -148,13 +197,13 @@ void main(void)
 	msg = "Initializing |";
 	putsLCD(msg);
 	
-	for(temp = 0; temp < 15; temp++) 
+	for(it = 0; it < 15; it++) 
 	{
-	  if(temp%3 == 1)
+	  if(it%3 == 1)
 	    msg = "Initializing /";
-	  if(temp%3 == 2)
+	  if(it%3 == 2)
 	    msg = "Initializing -";
-	  if(temp%3 == 0)
+	  if(it%3 == 0)
 	    msg = "Initializing |";
 	  cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
 	  putsLCD_fast(msg);
@@ -175,17 +224,25 @@ void main(void)
       case LOCKED:
         break;
       case CHECK:
+        PIEH = 0x00;
         checkPassword();
+        PIEH = 0xFF;
         break;
       case UNLOCKED:
         break;
+      case SET:
+        lockDevice();
       default:
       break;
     }
 	}
 }
 
-
+/**********************************************************
+*  
+* Send a command to the LCD
+*
+***********************************************************/
 void cmd2LCD (char cmd) 
 {
     
@@ -217,6 +274,11 @@ void cmd2LCD (char cmd)
     asm_mydelay10us(5);
 }
 
+/**********************************************************
+*  
+* Initialize LCD (Port K)
+*
+***********************************************************/
 void openLCD(void) 
 {
     DDRK = 0xFF; // PortK configured as outputs
@@ -229,6 +291,11 @@ void openLCD(void)
     asm_mydelay1ms(2); // wait for 2 ms. The 'clear display' instruction requires this   
 }
 
+/**********************************************************
+*  
+* Write a single character to LCD at current cursor position
+*
+***********************************************************/
 void putcLCD(char cx) 
 {
     char hnibble, lnibble;
@@ -261,20 +328,30 @@ void putcLCD(char cx)
     asm_mydelay10us(5); // wait for 50  us
 }
 
+/**********************************************************
+*  
+* Write a string to the LCD (with delay)
+*
+***********************************************************/
 void putsLCD (char *ptr) 
 {
-    int count= 0;
+    int c_count= 0;
     while (*ptr) 
     {
         putcLCD(*ptr);
         asm_mydelay1ms(80);
-        if(count > 16)
+        if(c_count > 16)
           cmd2LCD(SHIFT_DISP_RIGHT);
         ptr++;
-        count++;
+        c_count++;
     }
 }
 
+/**********************************************************
+*  
+* Write a string to the LCD (without delay)
+*
+***********************************************************/
 void putsLCD_fast(char *ptr) 
 {
     while (*ptr) 
@@ -284,16 +361,139 @@ void putsLCD_fast(char *ptr)
     }
 }
 
-// This function verifies if the keypad has been pressed.
-// If it was pressed, then the return value represents the key pressed.
-// If no key pressed, then the return value is 0x0F
-// If enter was pressed, value of 0x0A is returned
-char checkKeyPad(void) 
+/**********************************************************
+*  
+* Check which key on the keypad was pressed. 
+* Only accessed by the button press ISR of Port H.
+*
+***********************************************************/
+void checkKeyPad(void) 
 {
-    if(PIFH_PIFH0)
-    return 0x0f;
+if(state == SETTING) 
+{
+    if(count == (MAX_LENGTH + 1)) {
+      return;        
+    }
+    
+  if(PIFH_PIFH4)  // Pressed 0
+  {
+      password[count] = 0x00;
+      count++;
+      putsLCD("0");
+  } 
+  if(PIFH_PIFH6)  // Pressed 1
+  {
+      password[count] = 0x01;
+      count++;
+      putsLCD("1");
+  }
+  if(PIFH_PIFH5)  // Pressed 2
+  {
+      password[count] = 0x02;
+      count++;
+      putsLCD("2");
+  }
+  if(PIFH_PIFH7)  // Pressed 3
+  {
+      password[count] = 0x03;
+      count++;
+      putsLCD("3");
+  }
+  if(PIFH_PIFH0)  // Pressed 4
+  {
+      password[count] = 0x04;
+      count++;
+      putsLCD("4");
+  }
+  if(PIFH_PIFH2)  // Pressed 5
+  {
+      password[count] = 0x05;
+      count++;
+      putsLCD("5");
+  }
+  if(PIFH_PIFH3)  // Pressed 6
+  {
+      password[count] = 0x06;
+      count++;
+      putsLCD("6");
+  }
+  if(PIFH_PIFH1)  // Pressed Enter
+  {
+    count--;
+    state = SET;
+  }
+}
+else if(state == LOCKED) 
+{
+    if(count_check == (MAX_LENGTH + 1))
+      return;
+    
+  if(PIFH_PIFH4)  // Pressed 0
+  {
+      password_check[count_check] = 0x00;
+      count_check++;
+      putsLCD("0");
+  } 
+  if(PIFH_PIFH6)  // Pressed 1
+  {
+      password_check[count_check] = 0x01;
+      count_check++;
+      putsLCD("1");
+  }
+  if(PIFH_PIFH5)  // Pressed 2
+  {
+      password_check[count_check] = 0x02;
+      count_check++;
+      putsLCD("2");
+  }
+  if(PIFH_PIFH7)  // Pressed 3
+  {
+      password_check[count_check] = 0x03;
+      count_check++;
+      putsLCD("3");
+  }
+  if(PIFH_PIFH0)  // Pressed 4
+  {
+      password_check[count_check] = 0x04;
+      count_check++;
+      putsLCD("4");
+  }
+  if(PIFH_PIFH2)  // Pressed 5
+  {
+      password_check[count_check] = 0x05;
+      count_check++;
+      putsLCD("5");
+  }
+  if(PIFH_PIFH3)  // Pressed 6
+  {
+      password_check[count_check] = 0x06;
+      count_check++;
+      putsLCD("6");
+  }
+  if(PIFH_PIFH1)  // Pressed Enter
+  {
+    count_check--;
+    state = CHECK;
+  }
+} 
+  else if(state == UNLOCKED) 
+  {
+    if(PIFH_PIFH6)  // Pressed 1
+    {
+      state = SET;
+    }
+    if(PIFH_PIFH5)  // Pressed 2
+    {
+      state = INIT;
+    }
+  }
 }
 
+/**********************************************************
+*  
+* Verify if entered password matches stored password
+*
+***********************************************************/
 void checkPassword(void) 
 {
       // Before comparing, check if length of password
@@ -304,16 +504,13 @@ void checkPassword(void)
       } 
       else 
       {
-        for(temp = 0; temp < count; temp ++) 
+        for(temp = 0; temp <= count; temp ++) 
         {
-         if(*(password+temp) != *(password_check+temp)) 
+         if(password[temp] != password_check[temp]) 
          {
            wrongPassword();
-           temp = count;
-           break;
+           return;
          }
-         else
-          continue;
         }
         
         cmd2LCD(CLR_LCD);
@@ -323,9 +520,23 @@ void checkPassword(void)
         asm_mydelay1ms(200);
         attempts = 3;
         state = UNLOCKED;
+        asm_mydelay1ms(200);
+        cmd2LCD(CLR_LCD);
+        putsLCD(" Main Menu");
+        asm_mydelay1ms(200);
+        asm_mydelay1ms(200);
+        cmd2LCD(CLR_LCD);
+        putsLCD(" 1 - Lock Device");
+        cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
+        putsLCD("2 - Set Password");
       }  
 }
 
+/**********************************************************
+*  
+* Actions to take if password entered is wrong
+*
+***********************************************************/
 void wrongPassword(void) 
 {
   cmd2LCD(CLR_LCD);
@@ -351,21 +562,49 @@ void wrongPassword(void)
    cmd2LCD(CLR_LCD);
    if(attempts !=0)
     putsLCD(" Enter Password:");
-   else {
+   else 
+   {
     putsLCD(" Device Permanently");
     cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
     putsLCD("Locked.");
    }
    cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
    state = LOCKED;
+   count_check = 0;
 }
 
+/**********************************************************
+*  
+* Actions to take when user wishes to set a new password
+*
+***********************************************************/
 void setPassword(void) 
 {
+   cmd2LCD(CLR_LCD);
    putsLCD(" Enter a Password");
    cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
-   PIEH = 0x0F;
+   count = 0;
+   PIEH = 0xFF;
    state = SETTING;
+}
+
+/**********************************************************
+*  
+* Actions to take to lock the device
+*
+***********************************************************/
+void lockDevice(void) 
+{
+   PIEH = 0x00;
+   cmd2LCD(CLR_LCD);
+   putsLCD(" Locking Device...");
+   asm_mydelay1ms(200);
+   state = LOCKED;
+   cmd2LCD(CLR_LCD);
+   putsLCD(" Enter Password");
+   cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
+   count_check = 0;
+   PIEH = 0xFF;
 }
 
 
