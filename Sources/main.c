@@ -47,23 +47,7 @@ enum { INIT, LOCKED, SETTING, UNLOCKED, CHECK, SET} state;
   PIEH = 0x00;
   
   // Determine what action to take depending on the state of the program
-  switch(state) 
-  {
-    case SETTING:
-      checkKeyPad();
-      break;
-      
-    case LOCKED:
-      checkKeyPad();
-      break;
-      
-    case UNLOCKED:
-      checkKeyPad();
-      break;
-      
-    default:
-      break;
-  }
+  checkKeyPad();
   
   asm_mydelay1ms(25);
   
@@ -564,9 +548,9 @@ void wrongPassword(void)
     putsLCD(" Enter Password:");
    else 
    {
-    putsLCD(" Device Permanently");
+    putsLCD(" Device Locked");
     cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
-    putsLCD("Locked.");
+    putsLCD("Permanently.");
    }
    cmd2LCD(MOVE_CURSOR_TO_2ND_ROW);
    state = LOCKED;
